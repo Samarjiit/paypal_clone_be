@@ -1,8 +1,8 @@
-package com.paypal.notification_service.config;
+package com.paypal.reward_service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,3 +17,6 @@ public class JacksonConfig {
         return mapper;
     }
 }
+
+//for local date and time support.
+//we use this configuration to ensure that our application can correctly serialize and deserialize Java 8 date and time types, such as LocalDateTime, when working with JSON data. This is particularly important for maintaining the integrity of date and time information in our reward service.
