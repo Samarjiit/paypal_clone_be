@@ -3,6 +3,7 @@ package com.paypal.notification_service.controller;
 
 import com.paypal.notification_service.entity.Notification;
 import com.paypal.notification_service.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
+    @Autowired
     private NotificationService notificationService;
 
     @PostMapping
@@ -20,6 +22,6 @@ public class NotificationController {
 
     @GetMapping("/{userId}")
     public List<Notification> getNotificationsForUser(@PathVariable Long userId){
-        return notificationService.getNotificationsForUser(userId);
+        return notificationService.getNotificationsByUserId(userId);
     }
 }
