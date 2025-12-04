@@ -124,7 +124,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>2023.0.3</version> <!-- choose compatible version -->
+				<version>2025.0.0</version> <!-- choose compatible version -->
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
