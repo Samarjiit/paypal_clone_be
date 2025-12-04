@@ -37,7 +37,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         //extract bear er token from authorization header
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if(!authHeader.startsWith("Bearer ")){
+        if(authHeader==null || !authHeader.startsWith("Bearer ")){
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -47,6 +47,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             Claims claims = JwtUtil.validateToken(token);
             exchange.getRequest().mutate()
                     .header("X-User-Email", claims.getSubject())
+                    .header("X-ser-Id",claims.get("user-id",String.class))
+                    .header("X-User-Role",claims.get("role",String.class))
                     .build();
 
             return chain.filter(exchange)
@@ -63,6 +65,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 0;
+        return -100;
     }
 }
