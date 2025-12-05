@@ -14,30 +14,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaConsumerConfig {
+public class KafkaConsumer {
 
     @Bean
-    public ConsumerFactory<String, Transaction> consumerFactory() {
-        //convert the json message of kafka to transaction object
+    public ConsumerFactory<String, Transaction> consumerFactory(){
         JsonDeserializer<Transaction> deserializer = new JsonDeserializer<>(Transaction.class);
-        deserializer.setRemoveTypeHeaders(false);
+        deserializer.setRemoveTypeHeaders((false));
         deserializer.setUseTypeMapperForKey(true);
-        //to avoid security exception during deserialization
-        deserializer.addTrustedPackages("com.paypal.transaction_service.entity");
+        deserializer.addTrustedPackages("com.paypal.transaction-service.entity");
 
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost: 9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "reward-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+
     }
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Transaction> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Transaction> kafkaListenerContainerFactory(){
         ConcurrentKafkaListenerContainerFactory<String, Transaction> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        return factory;
+        return  factory;
     }
+
 }

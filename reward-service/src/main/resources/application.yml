@@ -11,12 +11,12 @@ spring:
     consumer:
       group-id: reward-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer # specify that key is string
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer # specify to convert json to object
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
         spring.json.trusted.packages: "*"
-        spring.json.value.default.type: com.paypal.reward_service.entity.Transaction #store messages in trans entity format
+        spring.json.value.default.type: com.paypal.reward_service.entity.Transaction
         spring.json.use.type.headers: false
 
     listener:

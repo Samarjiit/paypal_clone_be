@@ -30,6 +30,7 @@ public class Transaction {
     public Transaction() {}
 
     public Transaction(Long senderId, Long receiverId,
+                       String senderNameSnapshot, String receiverNameSnapshot,
                        Double amount, LocalDateTime timestamp, String status) {
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -104,3 +105,4 @@ public class Transaction {
                 '}';
     }
 }
+

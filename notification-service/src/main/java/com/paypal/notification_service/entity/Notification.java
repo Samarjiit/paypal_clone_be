@@ -1,6 +1,5 @@
 package com.paypal.notification_service.entity;
 
-
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,17 +9,18 @@ import java.time.LocalDateTime;
 public class Notification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long userId;
-
     private String message;
-
     private LocalDateTime sentAt;
 
-    public Notification(){}
+    // Default constructor
+    public Notification() {
+    }
 
+    // Parameterized constructor
     public Notification(Long id, Long userId, String message, LocalDateTime sentAt) {
         this.id = id;
         this.userId = userId;
@@ -28,6 +28,7 @@ public class Notification {
         this.sentAt = sentAt;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

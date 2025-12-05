@@ -7,7 +7,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-//talk with other services using http requests
 @FeignClient(name = "wallet-service", url = "http://localhost:8088/api/v1/wallets")
 public interface WalletClient {
 

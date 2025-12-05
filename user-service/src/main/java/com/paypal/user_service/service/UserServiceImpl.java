@@ -6,21 +6,22 @@ import com.paypal.user_service.entity.User;
 import com.paypal.user_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService{
 
-        private UserRepository userRepository;
-        private final WalletClient walletClient;
+    private UserRepository userRepository;
+    private final WalletClient walletClient;
 
-        //inject userrespo with constructor
-        public UserServiceImpl(UserRepository userRepository,WalletClient walletClient) {
-            this.userRepository = userRepository;
-            this.walletClient = walletClient;
-        }
+    public UserServiceImpl(UserRepository userRepository, WalletClient walletClient){
+        this.userRepository = userRepository;
+        this.walletClient = walletClient;
+    }
+
+
 
     @Override
     public User createUser(User user) {

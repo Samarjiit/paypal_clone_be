@@ -49,6 +49,9 @@ public class JWTUtil {
                 .getSubject();
     }
 
+
+
+
     public String extractRole(String token) {
         return (String) Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

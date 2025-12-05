@@ -1,14 +1,12 @@
 package com.paypal.user_service.dto;
 
-public class LoginRequest {
 
+
+public class LoginRequest {
     private String email;
     private String password;
 
-    public LoginRequest() {
-        // default constructor
-    }
-
+    public LoginRequest() {}
 
     public LoginRequest(String email, String password) {
         this.email = email;
@@ -27,7 +25,7 @@ public class LoginRequest {
         return password;
     }
 
-    public void setPassword(String password){
-            this.password=password;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

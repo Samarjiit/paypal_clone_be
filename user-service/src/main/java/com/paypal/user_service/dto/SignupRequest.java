@@ -2,15 +2,12 @@ package com.paypal.user_service.dto;
 
 public class SignupRequest {
     private String name;
-
     private String email;
-
     private String password;
-
     private String adminKey;
 
-    public SignupRequest(){
-        //default constructor
+    public SignupRequest() {
+        // default constructor
     }
 
     public SignupRequest(String name, String email, String password, String adminKey) {
@@ -18,6 +15,7 @@ public class SignupRequest {
         this.email = email;
         this.password = password;
         this.adminKey = adminKey;
+
     }
 
     public String getName() {
@@ -27,6 +25,8 @@ public class SignupRequest {
     public void setName(String name) {
         this.name = name;
     }
+
+
 
     public String getEmail() {
         return email;
@@ -46,9 +46,5 @@ public class SignupRequest {
 
     public String getAdminKey() {
         return adminKey;
-    }
-
-    public void setAdminKey(String adminKey) {
-        this.adminKey = adminKey;
     }
 }

@@ -1,4 +1,3 @@
-
 package com.paypal.transaction_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

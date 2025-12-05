@@ -1,5 +1,6 @@
 package com.paypal.wallet_service.service;
 
+
 import com.paypal.wallet_service.dto.*;
 import com.paypal.wallet_service.entity.Transaction;
 import com.paypal.wallet_service.entity.Wallet;
@@ -7,19 +8,19 @@ import com.paypal.wallet_service.entity.WalletHold;
 import com.paypal.wallet_service.exception.InsufficientFundsException;
 import com.paypal.wallet_service.exception.NotFoundException;
 import com.paypal.wallet_service.repository.TransactionRepository;
-import com.paypal.wallet_service.repository.WalletHoldRepository;
 import com.paypal.wallet_service.repository.WalletRepository;
-import jakarta.persistence.Temporal;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import com.paypal.wallet_service.repository.WalletHoldRepository;
+
 
 @Service
 public class WalletService {
 
     private final WalletRepository walletRepository;
     private final WalletHoldRepository walletHoldRepository;
-    private final TransactionRepository transactionRepository;
 
+    private final TransactionRepository transactionRepository;
 
     public WalletService(WalletRepository walletRepository, WalletHoldRepository walletHoldRepository, TransactionRepository transactionRepository) {
         this.walletRepository = walletRepository;
@@ -29,9 +30,13 @@ public class WalletService {
 
     @Transactional
     public WalletResponse createWallet(CreateWalletRequest request) {
-            Wallet wallet=new Wallet(request.getUserId(),request.getCurrency());
-            Wallet saved=walletRepository.save(wallet);
-            return new WalletResponse(saved.getId(),saved.getUserId(),saved.getCurrency(),saved.getBalance(),saved.getAvailableBalance());
+        Wallet wallet = new Wallet(request.getUserId(), request.getCurrency());
+        Wallet saved = walletRepository.save(wallet);
+        return new WalletResponse(
+                saved.getId(), saved.getUserId(), saved.getCurrency(),
+                saved.getBalance(), saved.getAvailableBalance()
+
+        );
     }
 
     @Transactional
@@ -61,50 +66,58 @@ public class WalletService {
         );
     }
 
-
     @Transactional
-    public WalletResponse debit(DebitRequest request){
+    public WalletResponse debit(DebitRequest request) {
         System.out.println("💸 DEBIT request received: userId=" + request.getUserId() +
                 ", amount=" + request.getAmount() +
                 ", currency=" + request.getCurrency());
 
-        Wallet wallet=walletRepository.findByUserIdAndCurrency(request.getUserId(),"INR")
-                .orElseThrow(()->new NotFoundException("Wallet not found for user: "+request.getUserId()));
+        Wallet wallet = walletRepository.findByUserIdAndCurrency(request.getUserId(), "INR")
+                .orElseThrow(() -> new NotFoundException("Wallet not found for user: "+ request.getUserId()));
 
-        if(wallet.getAvailableBalance()<request.getAmount()){
-            throw new InsufficientFundsException("not enough balance ");
+        if (wallet.getAvailableBalance() < request.getAmount()) {
+            throw new InsufficientFundsException("Not enough balance");
         }
 
-        wallet.setBalance(wallet.getBalance()-request.getAmount());
-        wallet.setAvailableBalance(wallet.getAvailableBalance()-request.getAmount());
-        Wallet saved=walletRepository.save(wallet);
+        wallet.setBalance(wallet.getBalance() - request.getAmount());
+        wallet.setAvailableBalance(wallet.getAvailableBalance() - request.getAmount());
+        Wallet saved = walletRepository.save(wallet);
 
-        System.out.println("Debit done: walletId="+saved.getId()+
-                ", newBalance="+saved.getBalance()+
-                ", availableBalance="+saved.getAvailableBalance());
+        System.out.println("✅ DEBIT done: walletId=" + saved.getId() +
+                ", newBalance=" + saved.getBalance() +
+                ", availableBalance=" + saved.getAvailableBalance());
 
-        return new WalletResponse(saved.getId(),saved.getUserId(),saved.getCurrency(),saved.getBalance(),saved.getAvailableBalance());
+        return new WalletResponse(
+                saved.getId(), saved.getUserId(), saved.getCurrency(),
+                saved.getBalance(), saved.getAvailableBalance()
+        );
     }
 
-    public WalletResponse getWallet(Long userId){
-        Wallet wallet=walletRepository.findByUserId(userId).orElseThrow(()->new NotFoundException("Wallet not found for user: "+userId));
-        return new WalletResponse(wallet.getId(),wallet.getUserId(),wallet.getCurrency(),wallet.getBalance(),wallet.getAvailableBalance());
+    public WalletResponse getWallet(Long userId) {
+        Wallet wallet = walletRepository.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("Wallet not found for user: " + userId));
+
+        return new WalletResponse(
+                wallet.getId(), wallet.getUserId(), wallet.getCurrency(),
+                wallet.getBalance(), wallet.getAvailableBalance()
+        );
     }
 
-    //wallet hold lifecycle: place hold -> capture hold -> release hold
     @Transactional
-    public HoldResponse placeHold(HoldRequest request){
-        Wallet wallet=walletRepository.findByUserIdAndCurrency(request.getUserId(),request.getCurrency()).orElseThrow(()->new NotFoundException("Wallet not found for user: "+request.getUserId()));
+    public HoldResponse placeHold(HoldRequest request) {
+        Wallet wallet = walletRepository.findByUserIdAndCurrency(request.getUserId(), request.getCurrency())
+                .orElseThrow(() -> new NotFoundException("Wallet not found for user: " + request.getUserId()));
 
-        if(wallet.getAvailableBalance()<request.getAmount()){
-            throw new InsufficientFundsException("not enough balance to place hold");
+        if (wallet.getAvailableBalance() < request.getAmount()) {
+            throw new InsufficientFundsException("Not enough balance to hold");
         }
-        wallet.setAvailableBalance(wallet.getAvailableBalance()-request.getAmount());
 
-        WalletHold hold=new WalletHold();
+        wallet.setAvailableBalance(wallet.getAvailableBalance() - request.getAmount());
+
+        WalletHold hold = new WalletHold();
         hold.setWallet(wallet);
         hold.setAmount(request.getAmount());
-        hold.setHoldReference("HOLD-"+System.currentTimeMillis());
+        hold.setHoldReference("HOLD-" + System.currentTimeMillis());
         hold.setStatus("ACTIVE");
 
         walletRepository.save(wallet);
@@ -114,37 +127,44 @@ public class WalletService {
     }
 
     @Transactional
-    public WalletResponse captureHold(CaptureRequest request){
-        WalletHold hold=walletHoldRepository.findByHoldReference(request.getHoldReference())
-                .orElseThrow(()->new NotFoundException("Hold not found"));
-        if(!"ACTIVE".equals(hold.getStatus())){
+    public WalletResponse captureHold(CaptureRequest request) {
+        WalletHold hold = walletHoldRepository.findByHoldReference(request.getHoldReference())
+                .orElseThrow(() -> new NotFoundException("Hold not found"));
+
+        if (!"ACTIVE".equals(hold.getStatus())) {
             throw new IllegalStateException("Hold is not active");
         }
 
-        Wallet wallet=hold.getWallet();
-        wallet.setBalance(wallet.getBalance() -hold.getAmount());
+        Wallet wallet = hold.getWallet();
+        wallet.setBalance(wallet.getBalance() - hold.getAmount());
+
         hold.setStatus("CAPTURED");
         walletRepository.save(wallet);
         walletHoldRepository.save(hold);
 
-        return new WalletResponse(wallet.getId(),wallet.getUserId(),wallet.getCurrency(),wallet.getBalance(),wallet.getAvailableBalance());
+        return new WalletResponse(wallet.getId(), wallet.getUserId(),
+                wallet.getCurrency(), wallet.getBalance(), wallet.getAvailableBalance());
     }
 
-    //if transaction is not completed within certain time, release the hold
     @Transactional
-    public HoldResponse releaseHold(String holdReference){
-        WalletHold hold=walletHoldRepository.findByHoldReference(holdReference).orElseThrow(()->new NotFoundException("Hold not found"));
+    public HoldResponse releaseHold(String holdReference) {
+        WalletHold hold = walletHoldRepository.findByHoldReference(holdReference)
+                .orElseThrow(() -> new NotFoundException("Hold not found"));
 
-        if(!"ACTIVE".equals(hold.getStatus())){
+        if (!"ACTIVE".equals(hold.getStatus())) {
             throw new IllegalStateException("Hold is not active");
         }
-        Wallet wallet=hold.getWallet();
-        wallet.setAvailableBalance(wallet.getAvailableBalance()+hold.getAmount());
+
+        Wallet wallet = hold.getWallet();
+        wallet.setAvailableBalance(wallet.getAvailableBalance() + hold.getAmount());
+
         hold.setStatus("RELEASED");
         walletRepository.save(wallet);
         walletHoldRepository.save(hold);
 
-        return new HoldResponse(hold.getHoldReference(),hold.getAmount(),hold.getStatus());
+        return new HoldResponse(hold.getHoldReference(), hold.getAmount(), hold.getStatus());
     }
+
+
 
 }
