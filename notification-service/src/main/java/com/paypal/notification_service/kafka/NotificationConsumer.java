@@ -1,8 +1,5 @@
 package com.paypal.notification_service.kafka;
 
-
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -16,16 +13,16 @@ import java.time.LocalDateTime;
 
 @Component
 public class NotificationConsumer {
+    private final NotificationRepository notificationRepository;
+    private final ObjectMapper mapper;
 
-    private  final NotificationRepository notificationRepository;
-    private final ObjectMapper objectMapper;
-
-
-    public NotificationConsumer(NotificationRepository notificationRepository, ObjectMapper objectMapper) {
+    public NotificationConsumer(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-        this.objectMapper = objectMapper;
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.disable(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS);
+
+        // Setup ObjectMapper with JavaTimeModule to handle LocalDateTime
+        this.mapper = new ObjectMapper();
+        this.mapper.registerModule(new JavaTimeModule());
+        this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @KafkaListener(topics = "txn-initiated", groupId = "notification-group")
@@ -40,8 +37,5 @@ public class NotificationConsumer {
         notificationRepository.save(notification);
         System.out.println("✅ Notification saved: " + notification);
     }
-
-
-
 
 }

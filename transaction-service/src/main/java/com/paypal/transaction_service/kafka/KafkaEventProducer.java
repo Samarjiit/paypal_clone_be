@@ -15,9 +15,9 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class KafkaEventProducer {
 
-    private static final String TOPIC = "txn-initiated";  //all transaction events/message will be sent to this topic
+    private static final String TOPIC = "txn-initiated";
 
-    private final KafkaTemplate<String, Transaction> kafkaTemplate; //store transaction per key
+    private final KafkaTemplate<String, Transaction> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -27,7 +27,6 @@ public class KafkaEventProducer {
         // Register module to handle Java 8 date/time serialization
         this.objectMapper.registerModule(new JavaTimeModule());
     }
-    //method to send transaction event to kafka topic
     public void sendTransactionEvent(String key, Transaction transaction) {
         System.out.println("📤 Sending to Kafka → Topic: " + TOPIC + ", Key: " + key + ", Message: " + transaction);
 

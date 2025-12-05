@@ -1,6 +1,9 @@
 package com.paypal.user_service.util;
 
 
+import io.jsonwebtoken.JwtException;
+import org.springframework.beans.factory.annotation.Value;  // ✅ correct
+
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -23,22 +26,27 @@ public class JWTUtil {
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
-    public String extractEmail(String token){
-        return Jwts.parserBuilder()
+
+    public boolean validateToken(String token, String username) {
+        try {
+            String extractedUsername = extractUsername(token);
+            return (extractedUsername.equals(username) && !isTokenExpired(token));
+        } catch (JwtException e) {
+            // catches expired, malformed, or tampered tokens
+            return false;
+        }
+    }
+
+    private boolean isTokenExpired(String token) {
+        Date expiration = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject();
+                .getExpiration();
+        return expiration.before(new Date());
     }
-    public boolean validateToken(String token, String username){
-        try {
-            extractEmail(token); // If parsing succeeds, token is valid
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+
     public String extractUsername(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

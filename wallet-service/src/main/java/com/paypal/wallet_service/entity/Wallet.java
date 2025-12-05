@@ -29,6 +29,7 @@ public class Wallet {
     @Column(nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    // --- Constructors ---
     public Wallet() {}
 
     public Wallet(Long userId, String currency) {
@@ -40,6 +41,7 @@ public class Wallet {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // --- Getters & Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
